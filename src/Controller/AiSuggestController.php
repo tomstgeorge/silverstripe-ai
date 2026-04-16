@@ -13,6 +13,7 @@ use SilverStripe\Control\HTTPResponse;
 use SilverStripe\Security\Permission;
 use SilverStripe\Security\SecurityToken;
 use SilverStripe\SiteConfig\SiteConfig;
+use SilverStripe\Versioned\Versioned;
 
 /**
  * Secure JSON endpoint consumed by the AI tab React component.
@@ -69,7 +70,7 @@ class AiSuggestController extends Controller
         $currentTitle = trim($body['currentTitle'] ?? '');
 
         // Resolve page for title context even if HTML was passed
-        $page = $pageId ? SiteTree::get()->byID($pageId) : null;
+        $page = $pageId ? Versioned::get_by_stage(SiteTree::class, Versioned::DRAFT)->byID($pageId) : null;
         if ($currentTitle === '' && $page) {
             $currentTitle = (string) $page->Title;
         }
