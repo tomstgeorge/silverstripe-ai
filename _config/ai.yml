@@ -51,3 +51,12 @@ SilverStripe\Core\Injector\Injector:
     constructor:
       provider: '%$DiveShop365\AI\Provider\AiProviderInterface'
 
+---
+Name: diveshop365-ai-routes
+After:
+  - '#rootroutes'
+---
+SilverStripe\Control\Director:
+  rules:
+    'ai-suggest//$Action': 'DiveShop365\AI\Controller\AiSuggestController'
+    'ai-chatbot//$Action': 'DiveShop365\AI\Controller\ChatbotController'
