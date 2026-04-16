@@ -58,8 +58,9 @@ class AiSuggestController extends Controller
 
         $body = json_decode($request->getBody(), true) ?? [];
 
-        // CSRF check
-        if (!SecurityToken::inst()->checkRequest($request)) {
+        // CSRF check — token is in the JSON body, not form vars, so check it directly
+        $securityId = $body['SecurityID'] ?? '';
+        if (!SecurityToken::inst()->check($securityId)) {
             return $response->setStatusCode(400)->setBody(json_encode(['error' => 'Invalid security token']));
         }
 
