@@ -92,7 +92,7 @@ class AiSuggestController extends Controller
         }
 
         $brandContext = (string) SiteConfig::current_site_config()->AiContextPrompt;
-        $seoService   = SeoAiSuggestService::create();
+        $seoService   = new SeoAiSuggestService($aiService);
         $suggestions  = $seoService->suggest($pageHtml, $brandContext, $currentTitle);
 
         return $response->setStatusCode(200)->setBody(json_encode($suggestions->toArray()));
