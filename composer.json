@@ -1,0 +1,24 @@
+{
+    "name": "diveshop365/silverstripe-ai",
+    "description": "Provider-agnostic AI service layer for SilverStripe — SEO suggestions and extensible feature services.",
+    "type": "silverstripe-vendormodule",
+    "license": "proprietary",
+    "require": {
+        "php": "^8.4",
+        "silverstripe/framework": "^6.0",
+        "silverstripe/cms": "^6.0",
+        "guzzlehttp/guzzle": "^7.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "DiveShop365\\AI\\": "src/"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-main": "1.x-dev"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

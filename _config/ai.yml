@@ -1,0 +1,62 @@
+---
+Name: diveshop365-ai
+---
+
+# ============================================================
+# AI Provider — swap by overriding this block in app _config
+# ============================================================
+#
+# OPTION A: OpenRouter (recommended — free models, one key)
+#   ENV:   AI_OPENROUTER_API_KEY
+#   Free models: google/gemini-2.0-flash-exp:free
+#                meta-llama/llama-3.3-70b-instruct:free
+#                deepseek/deepseek-r1:free
+#                qwen/qwen3-235b-a22b:free
+#
+# OPTION B: Google Gemini (native API — best free structured output)
+#   ENV:   AI_GEMINI_API_KEY
+#   class: DiveShop365\AI\Provider\GeminiProvider
+#   model: gemini-2.0-flash
+#
+# OPTION C: Groq (fastest inference, free tier)
+#   ENV:   AI_GROQ_API_KEY
+#   class: DiveShop365\AI\Provider\OpenAiCompatibleProvider
+#   baseUrl: https://api.groq.com/openai/v1
+#   model: llama-3.3-70b-versatile
+#   useJsonSchema: false  (Groq supports json_object only)
+#
+# OPTION D: Mistral (free experiment tier)
+#   ENV:   AI_MISTRAL_API_KEY
+#   class: DiveShop365\AI\Provider\OpenAiCompatibleProvider
+#   baseUrl: https://api.mistral.ai/v1
+#   model: mistral-small-latest
+#
+# OPTION E: Anthropic Claude (paid, highest quality)
+#   ENV:   AI_ANTHROPIC_API_KEY
+#   class: DiveShop365\AI\Provider\ClaudeProvider
+#   model: claude-sonnet-4-6
+# ============================================================
+
+SilverStripe\Core\Injector\Injector:
+  DiveShop365\AI\Provider\AiProviderInterface:
+    class: DiveShop365\AI\Provider\OpenAiCompatibleProvider
+    properties:
+      apiKey: '`AI_OPENROUTER_API_KEY`'
+      model: 'google/gemini-2.0-flash-exp:free'
+      appName: 'DiveShop365'
+      siteUrl: '`SS_BASE_URL`'
+      maxTokens: 1024
+
+  DiveShop365\AI\Service\AiService:
+    constructor:
+      provider: '%$DiveShop365\AI\Provider\AiProviderInterface'
+
+---
+Name: diveshop365-ai-routes
+After:
+  - '#rootroutes'
+---
+SilverStripe\Control\Director:
+  rules:
+    'ai-suggest//$Action': 'DiveShop365\AI\Controller\AiSuggestController'
+    'ai-chatbot//$Action': 'DiveShop365\AI\Controller\ChatbotController'
