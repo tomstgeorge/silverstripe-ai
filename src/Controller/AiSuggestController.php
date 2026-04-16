@@ -98,24 +98,33 @@ class AiSuggestController extends Controller
     }
 
     /**
-     * Fetch page HTML from the draft stage URL.
-     * Uses draft so suggestions work before publishing (unlike PlasticStudio's approach).
+     * Build page content directly from DataObject fields.
+     * Avoids HTTP self-requests which fail in Docker and on shared hosting.
      */
     private function fetchPageHtml(SiteTree $page): string
     {
-        try {
-            $url = $page->AbsoluteLink() . '?stage=Stage';
-            $context = stream_context_create([
-                'http' => [
-                    'timeout' => 15,
-                    'ignore_errors' => true,
-                    'header' => "Cookie: " . ($_SERVER['HTTP_COOKIE'] ?? '') . "\r\n",
-                ],
-            ]);
-            $html = @file_get_contents($url, false, $context);
-            return $html ?: '';
-        } catch (\Throwable) {
-            return '';
+        $parts = [];
+
+        if (!empty($page->Title)) {
+            $parts[] = '<h1>' . htmlspecialchars($page->Title) . '</h1>';
         }
+
+        if (!empty($page->MetaDescription)) {
+            $parts[] = '<p>' . htmlspecialchars($page->MetaDescription) . '</p>';
+        }
+
+        if (!empty($page->Content)) {
+            $parts[] = $page->Content;
+        }
+
+        // Pull in any extra text fields defined on subclasses (e.g. Intro, Summary, Body)
+        foreach (['Intro', 'Summary', 'Body', 'Excerpt', 'Description'] as $field) {
+            $value = $page->hasField($field) ? (string) $page->$field : '';
+            if (!empty($value)) {
+                $parts[] = $value;
+            }
+        }
+
+        return implode("\n", $parts);
     }
 }
